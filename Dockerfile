@@ -1,4 +1,4 @@
-FROM docker.io/pretalx/standalone:v2.3.2
+FROM docker.io/pretalx/standalone:v2.3.2@sha256:bedafcb43859e7cccd9191aba6e80910327a1856fe6a0e4685d35f7b097d6d16
 
 LABEL maintainer="ownCloud DevOps <devops@owncloud.com>"
 LABEL org.opencontainers.image.authors="ownCloud DevOps <devops@owncloud.com>"
