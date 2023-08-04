@@ -7,9 +7,12 @@ LABEL org.opencontainers.image.url="https://github.com/owncloud-ops/pretalx"
 LABEL org.opencontainers.image.source="https://github.com/owncloud-ops/pretalx"
 LABEL org.opencontainers.image.documentation="https://github.com/owncloud-ops/pretalx"
 
+ARG BUILD_VERSION
 ARG GOMPLATE_VERSION
 ARG CONTAINER_LIBRARY_VERSION
 
+# renovate: datasource=github-releases depName=pretalx/pretalx
+ENV PRETALX_VERSION="${BUILD_VERSION:-v2.3.1}"
 # renovate: datasource=github-releases depName=hairyhenderson/gomplate
 ENV GOMPLATE_VERSION="${GOMPLATE_VERSION:-v3.11.5}"
 # renovate: datasource=github-releases depName=owncloud-ops/container-library
@@ -32,8 +35,10 @@ RUN addgroup --gid 1001 --system pretalx && \
     locale-gen C.UTF-8 && \
     /usr/sbin/update-locale LANG=C.UTF-8 && \
     mkdir -p /pretalx /etc/pretalx /data && \
-    curl -SsfL "https://github.com/pretalx/pretalx/archive/v2.3.2.tar.gz" | \
-        tar -xzf - -C /pretalx/src --strip-components=2 pretalx-2.3.2/src && \
+    PRETALX_VERSION="${PRETALX_VERSION##v}" && \
+    echo "Setup Pretalx 'v${PRETALX_VERSION}' ..." && \
+    curl -SsfL "https://github.com/pretalx/pretalx/archive/v${PRETALX_VERSION}.tar.gz" | \
+        tar -xzf - -C /pretalx/src --strip-components=2 "pretalx-${PRETALX_VERSION}/src" && \
     pip install -e /pretalx/src/ && \
     pip install django-redis pylibmc mysqlclient psycopg2-binary redis==3.3.1 && \
     pip install gunicorn && \
