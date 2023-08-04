@@ -1,0 +1,43 @@
+#!/bin/bash
+set -eo pipefail
+
+# shellcheck disable=SC1091
+source /usr/local/lib/log.sh
+
+log_info "Preparing pretalx"
+/usr/local/bin/gomplate -o /etc/pretalx/pretalx.cfg -f /etc/templates/pretalx.cfg.tmpl
+
+cd /pretalx/src
+export PRETALX_DATA_DIR=/data
+export HOME=/pretalx
+export GUNICORN_WORKERS="${PRETALX_GUNICORN_WORKERS:-${WEB_CONCURRENCY:-$((2 * $(nproc --all)))}}"
+export GUNICORN_MAX_REQUESTS="${GUNICORN_MAX_REQUESTS:-1200}"
+export GUNICORN_MAX_REQUESTS_JITTER="${GUNICORN_MAX_REQUESTS_JITTER:-50}"
+
+if [ ! -d /data/logs ]; then
+    mkdir /data/logs
+fi
+if [ ! -d /data/media ]; then
+    mkdir /data/media
+fi
+
+python3 -m pretalx migrate --noinput
+
+if [ -n "${PRETALX_ADMIN_EMAIL}" ] && [ -n "${PRETALX_ADMIN_USERNAME}" ] && [ -n "${PRETALX_ADMIN_PASSWORD}" ]; then
+    log_info "Create admin user"
+    python3 -m pretalx create-admin \
+        --email "${PRETALX_ADMIN_EMAIL}" \
+        --username "${PRETALX_ADMIN_USERNAME}" \
+        --password "${PRETALX_ADMIN_PASSWORD}" \
+        --preserve
+fi
+
+log_info "Start Pretalx\n"
+exec gunicorn pretalx.wsgi \
+    --name pretalx \
+    --workers "${GUNICORN_WORKERS}" \
+    --max-requests "${GUNICORN_MAX_REQUESTS}" \
+    --max-requests-jitter "${GUNICORN_MAX_REQUESTS_JITTER}" \
+    --log-level="${PRETALX_LOG_LEVEL:-info}" \
+    --bind=0.0.0.0:80 &
+exec env C_FORCE_ROOT=True celery -A pretalx.celery_app worker -l "${PRETALX_LOG_LEVEL:-info}"

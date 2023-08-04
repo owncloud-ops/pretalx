@@ -1,0 +1,42 @@
+[filesystem]
+data = /data
+media = /data/media
+logs = /data/logs
+
+[site]
+debug = {{ getenv "PRETALX_SITE_DEBUG" "False" | conv.ToBool }}
+url = {{ getenv "PRETALX_SITE_URL" "http://localhost" }}
+{{- if getenv "PRETALX_SITE_SECRET" }}
+secret = {{ getenv "PRETALX_SITE_SECRET" }}
+{{- end }}
+
+[database]
+backend = {{ getenv "PRETALX_DB_TYPE" "sqlite3" }}
+{{- if ne (getenv "PRETALX_DB_TYPE" "sqlite3") "sqlite3" }}
+name = {{ getenv "PRETALX_DB_NAME" "pretalx" }}
+user = {{ getenv "PRETALX_DB_USER" }}
+password = {{ getenv "PRETALX_DB_PASS" }}
+host = {{ getenv "PRETALX_DB_HOST" }}
+port = {{ getenv "PRETALX_DB_PORT" }}
+{{- end }}
+
+[mail]
+from = {{ getenv "PRETALX_MAIL_FROM" "admin@localhost" }}
+host = {{ getenv "PRETALX_MAIL_HOST" "localhost" }}
+port = {{ getenv "PRETALX_MAIL_PORT" "25" }}
+user = {{ getenv "PRETALX_MAIL_USER" }}
+password = {{ getenv "PRETALX_MAIL_PASSWORD" }}
+tls = {{ getenv "PRETALX_MAIL_TLS" "False" | conv.ToBool }}
+ssl = {{ getenv "PRETALX_MAIL_SSL" "False" | conv.ToBool }}
+
+[celery]
+backend = redis://{{ getenv "PRETALX_REDIS_HOST" "redis" }}:{{ getenv "PRETALX_REDIS_PORT" "6379" }}/1
+broker = redis://{{ getenv "PRETALX_REDIS_HOST" "redis" }}:{{ getenv "PRETALX_REDIS_PORT" "6379" }}/2
+
+[redis]
+location=redis://{{ getenv "PRETALX_REDIS_HOST" "redis" }}:{{ getenv "PRETALX_REDIS_PORT" "6379" }}/0
+sessions=true
+
+[locale]
+language_code = {{ getenv "PRETALX_LANGUAGE_CODE" "en" }}
+time_zone = {{ getenv "PRETALX_TIME_ZONE" "UTC" }}
