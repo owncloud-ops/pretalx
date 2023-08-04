@@ -39,5 +39,5 @@ exec gunicorn pretalx.wsgi \
     --max-requests "${GUNICORN_MAX_REQUESTS}" \
     --max-requests-jitter "${GUNICORN_MAX_REQUESTS_JITTER}" \
     --log-level="${PRETALX_LOG_LEVEL:-info}" \
-    --bind=0.0.0.0:80 &
+    --bind=0.0.0.0:8000 &
 exec env C_FORCE_ROOT=True celery -A pretalx.celery_app worker -l "${PRETALX_LOG_LEVEL:-info}"

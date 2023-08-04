@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-URL=http://localhost
+URL=http://localhost:8000
 wget --quiet --tries=1 --spider ${URL} || exit 1
 
 exit 0

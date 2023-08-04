@@ -1,4 +1,4 @@
-FROM docker.io/pretalx/standalone:v2.3.2
+FROM python:3.10-slim
 
 LABEL maintainer="ownCloud DevOps <devops@owncloud.com>"
 LABEL org.opencontainers.image.authors="ownCloud DevOps <devops@owncloud.com>"
@@ -21,28 +21,41 @@ ENV LC_ALL=C.UTF-8
 
 ADD overlay /
 
-USER 0
-
-RUN apt-get update && apt-get install -y curl apt-transport-https ca-certificates && \
-    SUDO_FORCE_REMOVE=yes apt-get remove --purge -y sudo supervisor && \
+RUN addgroup --gid 1001 --system pretalx && \
+    adduser --system --disabled-password --no-create-home --home /pretalx --uid 1001 --shell /sbin/nologin --ingroup pretalx --gecos pretalx pretalx && \
+    apt-get update && apt-get install --no-install-recommends -y wget curl apt-transport-https ca-certificates git gettext libmariadb-dev libpq-dev \
+        libmemcached-dev pkg-config build-essential locales && \
     curl -SsfL -o /usr/local/bin/gomplate "https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_linux-amd64" && \
     curl -SsfL "https://github.com/owncloud-ops/container-library/releases/download/${CONTAINER_LIBRARY_VERSION}/container-library.tar.gz" | tar xz -C / && \
     chmod 755 /usr/local/bin/gomplate && \
-    pip3 install -e /pretalx/src/ && \
-    python3 -m pretalx makemigrations && \
-    python3 -m pretalx migrate && \
-    python3 -m pretalx rebuild && \
+    dpkg-reconfigure locales && \
+    locale-gen C.UTF-8 && \
+    /usr/sbin/update-locale LANG=C.UTF-8 && \
+    mkdir -p /pretalx /etc/pretalx /data && \
+    curl -SsfL "https://github.com/pretalx/pretalx/archive/v2.3.2.tar.gz" | \
+        tar -xzf - -C /pretalx/src --strip-components=2 pretalx-2.3.2/src && \
+    pip install -e /pretalx/src/ && \
+    pip install django-redis pylibmc mysqlclient psycopg2-binary redis==3.3.1 && \
+    pip install gunicorn && \
+    python -m pretalx makemigrations && \
+    python -m pretalx migrate && \
+    python -m pretalx rebuild && \
+    rm -f /pretalx/src/pretalx.cfg && \
+    rm -f /pretalx/src/data/.secret && \
     chmod 750 /etc/pretalx && \
     chmod 750 /data && \
-    chown -R pretalxuser:pretalxuser /etc/pretalx /pretalx /data && \
+    chown -R pretalx:pretalx /etc/pretalx /pretalx /data && \
+    apt-get remove -y --purge curl build-essential libmariadb-dev libpq-dev libmemcached-dev && \
+    apt-get clean all && \
+    apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /tmp/*
 
 VOLUME /data
 
-EXPOSE 80
+EXPOSE 8000
 
-USER pretalxuser
+USER pretalx
 
 ENTRYPOINT ["/usr/bin/entrypoint"]
 WORKDIR /data

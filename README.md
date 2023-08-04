@@ -7,7 +7,7 @@ Custom container image for the [pretalx](https://docs.pretalx.org/) conference m
 
 ## Ports
 
-- 80
+- 8000
 
 ## Volumes
 
@@ -21,7 +21,7 @@ PRETALX_ADMIN_USERNAME=
 PRETALX_ADMIN_PASSWORD=
 
 PRETALX_SITE_DEBUG=false
-PRETALX_SITE_URL=http://localhost
+PRETALX_SITE_URL=http://localhost:8000
 PRETALX_SITE_SECRE=
 
 PRETALX_DB_TYPE=sqlite3
