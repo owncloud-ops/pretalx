@@ -12,7 +12,7 @@ ARG GOMPLATE_VERSION
 ARG CONTAINER_LIBRARY_VERSION
 
 # renovate: datasource=github-releases depName=pretalx/pretalx
-ENV PRETALX_VERSION="${BUILD_VERSION:-v2.3.1}"
+ENV PRETALX_VERSION="${BUILD_VERSION:-v2.3.2}"
 # renovate: datasource=github-releases depName=hairyhenderson/gomplate
 ENV GOMPLATE_VERSION="${GOMPLATE_VERSION:-v3.11.5}"
 # renovate: datasource=github-releases depName=owncloud-ops/container-library
