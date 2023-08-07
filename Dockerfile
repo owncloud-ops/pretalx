@@ -50,7 +50,7 @@ RUN addgroup --gid 1001 --system pretalx && \
     chmod 750 /etc/pretalx && \
     chmod 750 /data && \
     chown -R pretalx:pretalx /etc/pretalx /pretalx /data && \
-    apt-get remove -y --purge curl build-essential libmariadb-dev libpq-dev libmemcached-dev && \
+    apt-get remove -y --purge curl build-essential && \
     apt-get clean all && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* && \
