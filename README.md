@@ -2,6 +2,7 @@
 
 [![Build Status](https://drone.owncloud.com/api/badges/owncloud-ops/pretalx/status.svg)](https://drone.owncloud.com/owncloud-ops/pretalx/)
 [![Docker Hub](https://img.shields.io/badge/docker-latest-blue.svg?logo=docker&logoColor=white)](https://hub.docker.com/r/owncloudops/pretalx)
+[![Quay.io](https://img.shields.io/badge/quay-latest-blue.svg?logo=docker&logoColor=white)](https://quay.io/repository/owncloudops/pretalx)
 
 Custom container image for the [pretalx](https://docs.pretalx.org/) conference management system.
 
@@ -40,7 +41,7 @@ PRETALX_MAIL_PASSWORD=
 PRETALX_MAIL_TLS=false
 PRETALX_MAIL_SSL=false
 
-PRETALX_REDIS_HOST=redi
+PRETALX_REDIS_HOST=redis
 PRETALX_REDIS_PORT=6379
 
 PRETALX_LANGUAGE_CODE=en
