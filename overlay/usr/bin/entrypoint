@@ -21,6 +21,9 @@ if [ ! -d /data/media ]; then
     mkdir /data/media
 fi
 
+log_info "Wait for redis server at '${PRETALX_REDIS_HOST:-redis}:${PRETALX_REDIS_PORT:-6379}'"
+/usr/local/bin/wait-for "${PRETALX_REDIS_HOST:-redis}":"${PRETALX_REDIS_PORT:-6379}"
+
 python3 -m pretalx migrate --noinput
 
 if [ -n "${PRETALX_ADMIN_EMAIL}" ] && [ -n "${PRETALX_ADMIN_USERNAME}" ] && [ -n "${PRETALX_ADMIN_PASSWORD}" ]; then
