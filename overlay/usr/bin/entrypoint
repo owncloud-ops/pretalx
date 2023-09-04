@@ -24,6 +24,13 @@ fi
 log_info "Wait for redis server at '${PRETALX_REDIS_HOST:-redis}:${PRETALX_REDIS_PORT:-6379}'"
 /usr/local/bin/wait-for "${PRETALX_REDIS_HOST:-redis}":"${PRETALX_REDIS_PORT:-6379}"
 
+if [ ! "$PRETALX_DB_TYPE" = "sqlite3" ]; then
+    if [ -n "$PRETALX_DB_HOST" ] && [ -n "$PRETALX_DB_PORT" ]; then
+        log_info "Wait for database server on '${PRETALX_DB_HOST}:${PRETALX_DB_PORT}'"
+        /usr/local/bin/wait-for "${PRETALX_DB_HOST}":"${PRETALX_DB_PORT}"
+    fi
+fi
+
 python3 -m pretalx migrate --noinput
 
 if [ -n "${PRETALX_ADMIN_EMAIL}" ] && [ -n "${PRETALX_ADMIN_USERNAME}" ] && [ -n "${PRETALX_ADMIN_PASSWORD}" ]; then
