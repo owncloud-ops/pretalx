@@ -13,7 +13,7 @@ ARG WAIT_FOR_VERSION
 ARG CONTAINER_LIBRARY_VERSION
 
 # renovate: datasource=github-releases depName=pretalx/pretalx
-ENV PRETALX_VERSION="${BUILD_VERSION:-v2.3.2}"
+ENV PRETALX_VERSION="${BUILD_VERSION:-v2023.1.0}"
 # renovate: datasource=github-releases depName=hairyhenderson/gomplate
 ENV GOMPLATE_VERSION="${GOMPLATE_VERSION:-v3.11.5}"
 # renovate: datasource=github-releases depName=thegeeklab/wait-for
@@ -30,7 +30,7 @@ ADD overlay /
 RUN addgroup --gid 1001 --system pretalx && \
     adduser --system --disabled-password --no-create-home --home /pretalx --uid 1001 --shell /sbin/nologin --ingroup pretalx --gecos pretalx pretalx && \
     apt-get update && apt-get install --no-install-recommends -y wget curl apt-transport-https ca-certificates git gettext libmariadb-dev libpq-dev \
-        libmemcached-dev pkg-config build-essential locales && \
+        libmemcached-dev pkg-config build-essential npm nodejs locales && \
     curl -SsfL -o /usr/local/bin/gomplate "https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_linux-amd64" && \
     curl -SsfL -o /usr/local/bin/wait-for "https://github.com/thegeeklab/wait-for/releases/download/${WAIT_FOR_VERSION}/wait-for" && \
     curl -SsfL "https://github.com/owncloud-ops/container-library/releases/download/${CONTAINER_LIBRARY_VERSION}/container-library.tar.gz" | tar xz -C / && \
@@ -43,19 +43,17 @@ RUN addgroup --gid 1001 --system pretalx && \
     PRETALX_VERSION="${PRETALX_VERSION##v}" && \
     echo "Setup Pretalx 'v${PRETALX_VERSION}' ..." && \
     curl -SsfL "https://github.com/pretalx/pretalx/archive/v${PRETALX_VERSION}.tar.gz" | \
-        tar -xzf - -C /pretalx/src --strip-components=2 "pretalx-${PRETALX_VERSION}/src" && \
-    pip install -e /pretalx/src/ && \
-    pip install django-redis pylibmc mysqlclient psycopg2-binary redis==3.3.1 && \
+        tar -xzf - -C /pretalx -X /.tarignore --strip-components=1 "pretalx-${PRETALX_VERSION}" && \
+    pip install -e /pretalx && \
+    pip install django-redis pylibmc mysqlclient psycopg2-binary celery[redis] && \
     pip install gunicorn && \
     python -m pretalx makemigrations && \
     python -m pretalx migrate && \
     python -m pretalx rebuild && \
-    rm -f /pretalx/src/pretalx.cfg && \
-    rm -f /pretalx/src/data/.secret && \
     chmod 750 /etc/pretalx && \
     chmod 750 /data && \
     chown -R pretalx:pretalx /etc/pretalx /pretalx /data && \
-    apt-get remove -y --purge curl build-essential && \
+    apt-get remove -y --purge curl build-essential npm nodejs && \
     apt-get clean all && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* && \
