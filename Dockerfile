@@ -1,4 +1,4 @@
-FROM python:3.11-slim@sha256:04db1f35625d657b1ed501a5da26854d057949d2e0003c1ea506f82968fbd7bd
+FROM python:3.11-slim@sha256:637774748f62b832dc11e7b286e48cd716727ed04b45a0322776c01bc526afc3
 
 LABEL maintainer="ownCloud DevOps <devops@owncloud.com>"
 LABEL org.opencontainers.image.authors="ownCloud DevOps <devops@owncloud.com>"
