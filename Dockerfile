@@ -13,7 +13,7 @@ ARG WAIT_FOR_VERSION
 ARG CONTAINER_LIBRARY_VERSION
 
 # renovate: datasource=github-releases depName=pretalx/pretalx
-ENV PRETALX_VERSION="${BUILD_VERSION:-v2024.1.0}"
+ENV PRETALX_VERSION="${BUILD_VERSION:-v2024.3.0}"
 # renovate: datasource=github-releases depName=hairyhenderson/gomplate
 ENV GOMPLATE_VERSION="${GOMPLATE_VERSION:-v3.11.7}"
 # renovate: datasource=github-releases depName=thegeeklab/wait-for
