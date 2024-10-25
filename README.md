@@ -23,7 +23,7 @@ PRETALX_ADMIN_PASSWORD=
 
 PRETALX_SITE_DEBUG=false
 PRETALX_SITE_URL=http://localhost:8000
-PRETALX_SITE_SECRE=
+PRETALX_SITE_SECRET=
 
 PRETALX_DB_TYPE=sqlite3
 # DB parameters take effect only if the type is not sqlite3.
