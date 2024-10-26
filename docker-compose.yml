@@ -37,7 +37,7 @@ services:
       - pretalx_data:/data
 
   nginx:
-    image: nginx:latest
+    image: nginx:alpine
     container_name: pretalx_nginx
     depends_on:
       - pretalx
