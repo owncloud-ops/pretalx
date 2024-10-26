@@ -1,11 +1,11 @@
 FROM python:3.11-slim@sha256:fc39d2e68b554c3f0a5cb8a776280c0b3d73b4c04b83dbade835e2a171ca27ef
 
-LABEL maintainer="ownCloud DevOps <devops@owncloud.com>"
-LABEL org.opencontainers.image.authors="ownCloud DevOps <devops@owncloud.com>"
+LABEL maintainer="Afonso Santos <afonso@afonsosantos.me>"
+LABEL org.opencontainers.image.authors="Afonso Santos <afonso@afonsosantos.me>"
 LABEL org.opencontainers.image.title="Pretalx conference management system"
-LABEL org.opencontainers.image.url="https://github.com/owncloud-ops/pretalx"
-LABEL org.opencontainers.image.source="https://github.com/owncloud-ops/pretalx"
-LABEL org.opencontainers.image.documentation="https://github.com/owncloud-ops/pretalx"
+LABEL org.opencontainers.image.url="https://github.com/afonsosantos/pretalx"
+LABEL org.opencontainers.image.source="https://github.com/afonsosantos/pretalx"
+LABEL org.opencontainers.image.documentation="https://github.com/afonsosantos/pretalx"
 
 ARG BUILD_VERSION
 ARG GOMPLATE_VERSION
@@ -15,7 +15,7 @@ ARG CONTAINER_LIBRARY_VERSION
 # renovate: datasource=github-releases depName=pretalx/pretalx
 ENV PRETALX_VERSION="${BUILD_VERSION:-v2024.3.0}"
 # renovate: datasource=github-releases depName=hairyhenderson/gomplate
-ENV GOMPLATE_VERSION="${GOMPLATE_VERSION:-v3.11.7}"
+ENV GOMPLATE_VERSION="${GOMPLATE_VERSION:-v4.1.0}"
 # renovate: datasource=github-releases depName=thegeeklab/wait-for
 ENV WAIT_FOR_VERSION="${WAIT_FOR_VERSION:-v0.4.2}"
 # renovate: datasource=github-releases depName=owncloud-ops/container-library
@@ -30,7 +30,7 @@ ADD overlay /
 RUN addgroup --gid 1001 --system pretalx && \
     adduser --system --disabled-password --no-create-home --home /pretalx --uid 1001 --shell /sbin/nologin --ingroup pretalx --gecos pretalx pretalx && \
     apt-get update && apt-get install --no-install-recommends -y wget curl apt-transport-https ca-certificates git gettext libmariadb-dev libpq-dev \
-        libmemcached-dev pkg-config build-essential npm nodejs locales && \
+    libmemcached-dev pkg-config build-essential npm nodejs locales && \
     curl -SsfL -o /usr/local/bin/gomplate "https://github.com/hairyhenderson/gomplate/releases/download/${GOMPLATE_VERSION}/gomplate_linux-amd64" && \
     curl -SsfL -o /usr/local/bin/wait-for "https://github.com/thegeeklab/wait-for/releases/download/${WAIT_FOR_VERSION}/wait-for" && \
     curl -SsfL "https://github.com/owncloud-ops/container-library/releases/download/${CONTAINER_LIBRARY_VERSION}/container-library.tar.gz" | tar xz -C / && \
@@ -43,7 +43,7 @@ RUN addgroup --gid 1001 --system pretalx && \
     PRETALX_VERSION="${PRETALX_VERSION##v}" && \
     echo "Setup Pretalx 'v${PRETALX_VERSION}' ..." && \
     curl -SsfL "https://github.com/pretalx/pretalx/archive/v${PRETALX_VERSION}.tar.gz" | \
-        tar -xzf - -C /pretalx -X /.tarignore --strip-components=1 "pretalx-${PRETALX_VERSION}" && \
+    tar -xzf - -C /pretalx -X /.tarignore --strip-components=1 "pretalx-${PRETALX_VERSION}" && \
     pip install -e /pretalx && \
     pip install django-redis pylibmc mysqlclient psycopg2-binary celery[redis] && \
     pip install gunicorn && \

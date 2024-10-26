@@ -1,0 +1,66 @@
+services:
+  pretalx:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pretalx
+    depends_on:
+      - db
+      - redis
+    environment:
+      - PRETALX_ADMIN_EMAIL=afonso@afonsosantos.me
+      - PRETALX_ADMIN_USERNAME=afonsosantos
+      - PRETALX_ADMIN_PASSWORD=Pem9021053!!
+      - PRETALX_SITE_DEBUG=false
+      - PRETALX_SITE_URL=https://pretalx.congresso-spmc.com
+      - PRETALX_SITE_SECRET="q=j2-drfc1b*)hhijyl)t8szc=wwu3gq(%wuea(&t3=rmew8%+"
+      - PRETALX_DB_TYPE=postgresql
+      - PRETALX_DB_NAME=pretalx
+      - PRETALX_DB_USER=pretalx
+      - PRETALX_DB_PASS=password
+      - PRETALX_DB_HOST=db
+      - PRETALX_DB_PORT=5432
+      - PRETALX_MAIL_FROM=no-reply@congresso-spmc.com
+      - PRETALX_MAIL_HOST=mail.congresso-spmc.com
+      - PRETALX_MAIL_PORT=465
+      - PRETALX_MAIL_USER=no-reply@congresso-spmc.com
+      - PRETALX_MAIL_PASSWORD="1*m&9Bs*G*aoL63yV3X%iSTO"
+      - PRETALX_MAIL_TLS=false
+      - PRETALX_MAIL_SSL=true
+      - PRETALX_REDIS_HOST=redis
+      - PRETALX_REDIS_PORT=6379
+      - PRETALX_LANGUAGE_CODE=en
+      - PRETALX_TIME_ZONE=Europe/Lisbon
+      - PRETALX_LOG_LEVEL=info
+      - PRETALX_GUNICORN_WORKERS=3
+    volumes:
+      - pretalx_data:/data
+
+  nginx:
+    image: nginx:latest
+    container_name: pretalx_nginx
+    depends_on:
+      - pretalx
+    ports:
+      - "80:80"
+    volumes:
+      - pretalx_data:/data:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+
+  db:
+    image: postgres:16-alpine
+    container_name: pretalx_db
+    environment:
+      - POSTGRES_DB=pretalx
+      - POSTGRES_USER=pretalx
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+
+volumes:
+  pretalx_data:
+  pretalx_static:
+  db_data:
